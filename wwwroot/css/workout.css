@@ -1,0 +1,46 @@
+﻿body {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: Black;
+    color: white;
+}
+
+h1, h2 {
+    color:saddlebrown;
+}
+
+a {
+    color: saddlebrown;
+    text-decoration: none;
+    padding: 10px;
+}
+
+a:hover {
+    font-size: 1.2em;
+    text-shadow: 1px 1px 10px darkgoldenrod;
+    border-radius: 10px;
+    text-decoration: none;
+    color: saddlebrown;
+}
+
+nav {
+    background-color:saddlebrown;
+}
+
+.nav-link {
+    color: white;
+}
+
+.nav-link:hover {
+    color: white;
+    background-color: black;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.table {
+    color: white;
+}
+
+thead {
+    background-color:saddlebrown;
+}
