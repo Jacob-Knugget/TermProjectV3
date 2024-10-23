@@ -11,7 +11,9 @@ namespace TermProject
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<TermProjectContext>(options =>
+            builder.Services.AddDbContext<WorkoutContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("TermProjectContext") ?? throw new InvalidOperationException("Connection string 'TermProjectContext' not found.")));
+            builder.Services.AddDbContext<WorkoutContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("TermProjectContext") ?? throw new InvalidOperationException("Connection string 'TermProjectContext' not found.")));
 
             // Add services to the container.

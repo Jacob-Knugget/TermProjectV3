@@ -12,9 +12,9 @@ namespace TermProject.Controllers
 {
     public class BodyGroupsController : Controller
     {
-        private readonly TermProjectContext _context;
+        private readonly WorkoutContext _context;
 
-        public BodyGroupsController(TermProjectContext context)
+        public BodyGroupsController(WorkoutContext context)
         {
             _context = context;
         }

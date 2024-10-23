@@ -12,14 +12,14 @@ using TermProject.Models;
 namespace TermProject.Migrations
 {
     [DbContext(typeof(WorkoutContext))]
-    [Migration("20241020200445_SecondModel")]
-    partial class SecondModel
+    [Migration("20241022234213_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.33")
+                .HasAnnotation("ProductVersion", "6.0.35")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);

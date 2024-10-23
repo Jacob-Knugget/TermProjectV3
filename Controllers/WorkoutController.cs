@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using TermProject.Data;
 using TermProject.Models;
 
 namespace TermProject.Controllers
@@ -18,15 +19,14 @@ namespace TermProject.Controllers
             _context = context;
         }
 
-        // GET: Workout
+        // GET: NewWorkouts
         public async Task<IActionResult> Index()
         {
-              return _context.Plan != null ? 
-                          View(await _context.Plan.ToListAsync()) :
-                          Problem("Entity set 'WorkoutContext.Plan'  is null.");
+            var termProjectContext = _context.Plan.Include(w => w.BodyGroup);
+            return View(await termProjectContext.ToListAsync());
         }
 
-        // GET: Workout/Details/5
+        // GET: NewWorkouts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Plan == null)
@@ -35,6 +35,7 @@ namespace TermProject.Controllers
             }
 
             var workouts = await _context.Plan
+                .Include(w => w.BodyGroup)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (workouts == null)
             {
@@ -44,18 +45,19 @@ namespace TermProject.Controllers
             return View(workouts);
         }
 
-        // GET: Workout/Create
+        // GET: NewWorkouts/Create
         public IActionResult Create()
         {
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId");
             return View();
         }
 
-        // POST: Workout/Create
+        // POST: NewWorkouts/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,Sets,Reps,Weight")] Workouts workouts)
+        public async Task<IActionResult> Create([Bind("ID,Name,BodyGroupId,Sets,Reps,Weight")] Workouts workouts)
         {
             if (ModelState.IsValid)
             {
@@ -63,10 +65,11 @@ namespace TermProject.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId", workouts.BodyGroupId);
             return View(workouts);
         }
 
-        // GET: Workout/Edit/5
+        // GET: NewWorkouts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Plan == null)
@@ -79,15 +82,16 @@ namespace TermProject.Controllers
             {
                 return NotFound();
             }
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId", workouts.BodyGroupId);
             return View(workouts);
         }
 
-        // POST: Workout/Edit/5
+        // POST: NewWorkouts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Sets,Reps,Weight")] Workouts workouts)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,BodyGroupId,Sets,Reps,Weight")] Workouts workouts)
         {
             if (id != workouts.ID)
             {
@@ -114,10 +118,11 @@ namespace TermProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId", workouts.BodyGroupId);
             return View(workouts);
         }
 
-        // GET: Workout/Delete/5
+        // GET: NewWorkouts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Plan == null)
@@ -126,6 +131,7 @@ namespace TermProject.Controllers
             }
 
             var workouts = await _context.Plan
+                .Include(w => w.BodyGroup)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (workouts == null)
             {
@@ -135,28 +141,28 @@ namespace TermProject.Controllers
             return View(workouts);
         }
 
-        // POST: Workout/Delete/5
+        // POST: NewWorkouts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Plan == null)
             {
-                return Problem("Entity set 'WorkoutContext.Plan'  is null.");
+                return Problem("Entity set 'TermProjectContext.Workouts'  is null.");
             }
             var workouts = await _context.Plan.FindAsync(id);
             if (workouts != null)
             {
                 _context.Plan.Remove(workouts);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool WorkoutsExists(int id)
         {
-          return (_context.Plan?.Any(e => e.ID == id)).GetValueOrDefault();
+            return (_context.Plan?.Any(e => e.ID == id)).GetValueOrDefault();
         }
     }
 }
