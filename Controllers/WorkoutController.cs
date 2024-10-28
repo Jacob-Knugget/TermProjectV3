@@ -91,7 +91,7 @@ namespace TermProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,BodyGroupId,Sets,Reps,Weight")] Workouts workouts)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,BodyGroupName,Sets,Reps,Weight")] Workouts workouts)
         {
             if (id != workouts.ID)
             {
