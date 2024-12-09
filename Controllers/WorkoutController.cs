@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TermProject.Data;
 using TermProject.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TermProject.Controllers
 {
@@ -20,10 +21,43 @@ namespace TermProject.Controllers
         }
 
         // GET: NewWorkouts
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
-            var termProjectContext = _context.Plan.Include(w => w.BodyGroup);
-            return View(await termProjectContext.ToListAsync());
+            ViewData["CurrentSort"] = sortOrder;
+            // Set up the sorting and filtering logic
+            ViewData["BodyGroupSortParam"] = String.IsNullOrEmpty(sortOrder) ? "bodygroup_desc" : "";
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString; // Store the current search string
+
+            var workouts = _context.Plan.Include(w => w.BodyGroup).AsQueryable();
+
+            // Apply filtering by workout name if a search string is provided
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                workouts = workouts.Where(w => w.Name.Contains(searchString));
+            }
+
+            // Apply sorting based on the sortOrder
+            switch (sortOrder)
+            {
+                case "bodygroup_desc":
+                    workouts = workouts.OrderByDescending(w => w.BodyGroup.BodyGroupName);
+                    break;
+                default:
+                    workouts = workouts.OrderBy(w => w.BodyGroup.BodyGroupName);
+                    break;
+            }
+
+            int pageSize = 5;
+            return View(await PaginatedList<Workouts>.CreateAsync(workouts.AsNoTracking(), pageNumber ?? 1, pageSize)) ;
         }
 
         // GET: NewWorkouts/Details/5
@@ -48,7 +82,7 @@ namespace TermProject.Controllers
         // GET: NewWorkouts/Create
         public IActionResult Create()
         {
-            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId");
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupName");
             return View();
         }
 
@@ -65,7 +99,7 @@ namespace TermProject.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId", workouts.BodyGroupId);
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupName", workouts.BodyGroupId);
             return View(workouts);
         }
 
@@ -77,12 +111,12 @@ namespace TermProject.Controllers
                 return NotFound();
             }
 
-            var workouts = await _context.Plan.FindAsync(id);
+            var workouts = await _context.Plan.Include(w => w.BodyGroup).FirstOrDefaultAsync(w => w.ID == id);
             if (workouts == null)
             {
                 return NotFound();
             }
-            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId", workouts.BodyGroupId);
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupName", workouts.BodyGroupId);
             return View(workouts);
         }
 
@@ -91,7 +125,7 @@ namespace TermProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,BodyGroupName,Sets,Reps,Weight")] Workouts workouts)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,BodyGroupId,Sets,Reps,Weight")] Workouts workouts)
         {
             if (id != workouts.ID)
             {
@@ -118,7 +152,7 @@ namespace TermProject.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupId", workouts.BodyGroupId);
+            ViewData["BodyGroupId"] = new SelectList(_context.Set<BodyGroup>(), "BodyGroupId", "BodyGroupName", workouts.BodyGroupId);
             return View(workouts);
         }
 

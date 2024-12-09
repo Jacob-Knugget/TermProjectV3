@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TermProject.Data;
 using TermProject.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TermProject.Controllers
 {

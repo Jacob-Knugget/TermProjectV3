@@ -39,8 +39,43 @@ nav {
 
 .table {
     color: white;
+    margin-top: 20px;
 }
 
 thead {
     background-color:saddlebrown;
+}
+
+/* Style for sorting column links */
+.sortable-column {
+    text-decoration: none; /* Remove the default underline */
+    color: inherit; /* Use the default text color */
+}
+
+.sortable-column:hover {
+    font-size: 1em;
+    text-shadow: 1px 1px 10px darkgoldenrod;
+    border-radius: 10px;
+    text-decoration: none;
+    background-color: black;
+    color: white;
+}
+
+.sortable-column:hover {
+    text-decoration: underline; /* Add underline on hover for better UX */
+}
+
+.sortable-column span {
+    margin-left: 5px;
+    font-size: 0.8em; /* Adjust arrow size */
+}
+
+.sortable-column span:hover {
+    cursor: pointer; /* Change cursor to indicate it's interactive */
+}
+
+/* Style for the search bar */
+
+#searchString {
+    width: 300px;
 }
